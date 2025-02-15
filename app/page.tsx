@@ -9,7 +9,6 @@ const Confetti = dynamic(() => import("react-confetti"), {
   ssr: false,
 }) as React.FC<{ width: number; height: number }>;
 
-
 export default function ValentinePage() {
   const [accepted, setAccepted] = useState(false);
   const [noClicks, setNoClicks] = useState(0);
@@ -29,6 +28,7 @@ export default function ValentinePage() {
 
   const handleYesClick = useCallback(() => {
     setAccepted(true);
+    setNoClicks(0); // Reset No Clicks
     setTimeout(() => setShowContract(true), 2000);
   }, []);
 
@@ -40,9 +40,9 @@ export default function ValentinePage() {
     <div
       className={`flex flex-col items-center justify-center min-h-screen px-4 transition-all duration-500 text-center`}
       style={{
-        transform: `rotate(${noClicks * 2}deg) scale(${1 - noClicks * 0.05})`,
+        transform: `rotate(${noClicks * 10}deg) scale(${Math.max(0.1, 1 - noClicks * 0.05)})`,
         backgroundColor: noClicks > 5 ? "#ff4d4d" : "#ffcccb",
-        filter: noClicks > 8 ? "blur(5px) invert(1)" : "none",
+        filter: noClicks > 8 ? `blur(${Math.min(20, noClicks * 1.5)}px) invert(1)` : "none",
       }}
     >
       {accepted && <Confetti width={dimensions.width} height={dimensions.height} />}
@@ -65,9 +65,9 @@ export default function ValentinePage() {
           onMouseEnter={() => setHoveringNo(true)}
           onMouseLeave={() => setHoveringNo(false)}
           animate={{
-            x: hoveringNo ? Math.random() * 300 - 150 : 0,
-            y: hoveringNo ? Math.random() * 300 - 150 : 0,
-            scale: 1 - noClicks * 0.1,
+            x: hoveringNo ? Math.random() * 500 - 250 : 0,
+            y: hoveringNo ? Math.random() * 500 - 250 : 0,
+            scale: Math.max(0.1, 1 - noClicks * 0.1),
             rotate: hoveringNo ? Math.random() * 360 : 0,
           }}
           transition={{ type: "spring", stiffness: 100 }}
