@@ -1,101 +1,129 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
+import { SparklesIcon } from "@heroicons/react/24/solid";
+
+const Confetti = dynamic(() => import("react-confetti").then((mod) => mod.default as React.FC<any>), { ssr: false });
+
+export default function ValentinePage() {
+  const [accepted, setAccepted] = useState(false);
+  const [noClicks, setNoClicks] = useState(0);
+  const [hoveringNo, setHoveringNo] = useState(false);
+  const [glitchEffect, setGlitchEffect] = useState(false);
+  const [showMagic, setShowMagic] = useState(false);
+  const [showContract, setShowContract] = useState(false);
+  const [showFinalMessage, setShowFinalMessage] = useState(false);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    };
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
+
+  const handleYesClick = useCallback(() => {
+    setAccepted(true);
+    setShowMagic(true);
+    setTimeout(() => setShowContract(true), 2000);
+  }, []);
+
+  const handleNoClick = useCallback(() => {
+    setNoClicks((prev) => prev + 1);
+  }, []);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div
+      className={`flex flex-col items-center justify-center min-h-screen px-4 transition-all duration-500 text-center ${
+        glitchEffect ? "animate-glitch" : ""
+      }`}
+      style={{
+        transform: `rotate(${noClicks * 2}deg) scale(${1 - noClicks * 0.05})`,
+        backgroundColor: noClicks > 5 ? "#ff4d4d" : "#ffcccb",
+        filter: noClicks > 8 ? "blur(5px) invert(1)" : "none",
+      }}
+    >
+      {accepted && <Confetti width={dimensions.width} height={dimensions.height} />}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      <h1 className="text-4xl sm:text-5xl font-bold text-red-600 mb-8 animate-pulse flex items-center justify-center gap-2">
+        Will you be my Valentine? ❤️ <SparklesIcon className="w-6 sm:w-8 h-6 sm:h-8 text-yellow-300 animate-spin" />
+      </h1>
+
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
+        <motion.button
+          onClick={handleYesClick}
+          whileHover={{ scale: 1.2 }}
+          className="px-6 py-3 bg-green-500 text-white font-bold rounded-xl shadow-md hover:bg-green-600 transition text-lg sm:text-xl"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          Yes 💖
+        </motion.button>
+
+        <motion.button
+          onClick={handleNoClick}
+          onMouseEnter={() => setHoveringNo(true)}
+          onMouseLeave={() => setHoveringNo(false)}
+          animate={{
+            x: hoveringNo ? Math.random() * 300 - 150 : 0,
+            y: hoveringNo ? Math.random() * 300 - 150 : 0,
+            scale: 1 - noClicks * 0.1,
+            rotate: hoveringNo ? Math.random() * 360 : 0,
+          }}
+          transition={{ type: "spring", stiffness: 100 }}
+          className="px-6 py-3 bg-red-500 text-white font-bold rounded-xl shadow-md text-lg sm:text-xl"
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          No 😢
+        </motion.button>
+      </div>
+
+      {showContract && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1 }}
+          className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-white bg-opacity-90 z-50 p-4 sm:p-6"
         >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <div className="text-center text-black max-w-md">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Official Valentine’s Contract 💍</h2>
+            <p className="text-lg">I, the undersigned, hereby accept the most amazing Valentine proposal ever!</p>
+            <p className="mt-4 italic">
+              "யாரும் கேட்கா எதுவொன்றை எது ஒன்றை
+நான் கேட்டேன் உன்னை
+அதைத் தந்தால் நன்றி
+பிடிவாதம் இன்றி
+நீ தந்தால் நன்றி
+துளி துளிரே
+துளி காலம் கேட்டேன்
+துளி காதல் கேட்டேன்
+துளி காமம் கேட்டேன்
+மறு உயிரே"
+            </p>
+            <motion.button
+              onClick={() => setShowFinalMessage(true)}
+              whileHover={{ scale: 1.1 }}
+              className="mt-6 px-6 py-3 bg-blue-500 text-white font-bold rounded-xl shadow-md hover:bg-blue-600 transition text-lg"
+            >
+              Sign with ❤️
+            </motion.button>
+          </div>
+        </motion.div>
+      )}
+
+      {showFinalMessage && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1 }}
+          className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-90 z-50 p-4 sm:p-6 text-white text-center"
+        >
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6 animate-bounce">
+            Oommala Neethan Di En Wife uh Neethan Di Life Uh! 💍💖
+          </h2>
+        </motion.div>
+      )}
     </div>
   );
 }
