@@ -1,17 +1,20 @@
-"use client";
+
+ "use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { SparklesIcon } from "@heroicons/react/24/solid";
 
-const Confetti = dynamic(() => import("react-confetti").then((mod) => mod.default as React.FC<any>), { ssr: false });
+const Confetti = dynamic(
+  () => import("react-confetti").then((mod) => mod.default as React.FC<Record<string, unknown>>),
+  { ssr: false }
+);
 
 export default function ValentinePage() {
   const [accepted, setAccepted] = useState(false);
   const [noClicks, setNoClicks] = useState(0);
   const [hoveringNo, setHoveringNo] = useState(false);
-  const [glitchEffect, setGlitchEffect] = useState(false);
   const [showMagic, setShowMagic] = useState(false);
   const [showContract, setShowContract] = useState(false);
   const [showFinalMessage, setShowFinalMessage] = useState(false);
@@ -39,7 +42,7 @@ export default function ValentinePage() {
   return (
     <div
       className={`flex flex-col items-center justify-center min-h-screen px-4 transition-all duration-500 text-center ${
-        glitchEffect ? "animate-glitch" : ""
+        noClicks > 5 ? "animate-shake" : ""
       }`}
       style={{
         transform: `rotate(${noClicks * 2}deg) scale(${1 - noClicks * 0.05})`,
@@ -89,7 +92,7 @@ export default function ValentinePage() {
           <div className="text-center text-black max-w-md">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">Official Valentine’s Contract 💍</h2>
             <p className="text-lg">I, the undersigned, hereby accept the most amazing Valentine proposal ever!</p>
-            <p className="mt-4 italic">
+            <p className="mt-4 italic">&quot;
               "யாரும் கேட்கா எதுவொன்றை எது ஒன்றை
 நான் கேட்டேன் உன்னை
 அதைத் தந்தால் நன்றி
@@ -99,8 +102,7 @@ export default function ValentinePage() {
 துளி காலம் கேட்டேன்
 துளி காதல் கேட்டேன்
 துளி காமம் கேட்டேன்
-மறு உயிரே"
-            </p>
+மறு உயிரே"&quot;</p>
             <motion.button
               onClick={() => setShowFinalMessage(true)}
               whileHover={{ scale: 1.1 }}
